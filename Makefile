@@ -29,6 +29,7 @@ RCFILES_CP_TO	:= $(filter-out %.pyc,$(RCFILES_CP_TO))
 ifneq ($(KERNEL),linux)
 	RCFILES_OUT := $(filter-out $(OUTDIR)/.x%,$(RCFILES_OUT))
 	RCFILES_OUT := $(filter-out $(OUTDIR)/.i3/%,$(RCFILES_OUT))
+	RCFILES_OUT := $(filter-out $(OUTDIR)/.local/share/applications/%,$(RCFILES_OUT))
 endif
 
 
@@ -43,7 +44,7 @@ copy-real: all
 	$(RSYNC) -avPhi $(OUTDIR)/ $(HOME)/
 
 diff: all
-	$(DIFF) -wr $(HOME)/ $(OUTDIR)/ | $(GREP) -v "^Only in $(HOME)/:" || true
+	$(DIFF) -wr $(HOME)/ $(OUTDIR)/ | $(GREP) -v "^Only in $(HOME)/[^:]*:" || true
 
 $(OUTDIR)/.%: _% $(CONFIG)
 	@test -d $(@D) || $(MKDIR) $(@D)
