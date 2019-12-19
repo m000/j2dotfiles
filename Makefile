@@ -1,13 +1,26 @@
 # Tools used by the Makefile.
 CP          = cp -f
 MKDIR       = mkdir -vp
-RSYNC       = rsync
 DIFF        = diff
 GREP        = grep
-J2          = j2 -U --filters j2_filters.py --tests j2_tests.py --
+RSYNC       = rsync
+RSYNC_OPTS  = -avhi -c --no-t
+J2          = j2
+J2_OPTS     = --undefined=normal --filters j2_filters.py --tests j2_tests.py --
+
+# rsync options note:
+#   -h      -> human readable
+#   -i      -> itemize changes
+# 	-c      -> files are copied based on changed checksum
+# 	--no-t  -> turn of -t (implied by -a) to avoid updating timestamps
+
+
+# Enable secondary expansion, used by the generic recipes.
+.SECONDEXPANSION:
 
 # Configuration variables, affecting the processing of templates.
 OUTDIR          = output
+TPLDIR          = tpl/m000
 HOSTNAME        = $(shell uname -n)
 HOSTNAME_SHORT  = $(shell uname -n | cut -d. -f1)
 KERNEL          = $(shell uname -s | tr A-Z a-z)
@@ -35,18 +48,18 @@ endif
 
 CONFIG          = $(CONFIG_BASE) $(CONFIG_OS) $(CONFIG_HOST)
 
-# Make a list of *.j2 files that should be compiled with j2cli.
-RCFILES_IN      = $(shell find _* \( -type f -or -type l \) -iname '*.j2')
-RCFILES_OUT     = $(patsubst _%.j2,$(OUTDIR)/.%,$(RCFILES_IN))
+# List of non-hidden template files. To compiled with j2cli.
+RCFILES_IN      = $(shell find $(TPLDIR) \( -type f -or -type l \) -not -iname '.*' -iname '*.j2')
+RCFILES_OUT     = $(subst /_,/.,$(patsubst $(TPLDIR)/%.j2,$(OUTDIR)/%,$(RCFILES_IN)))
 
-# Anything inside a directory that is not a template is copied without processing.
-RCFILES_CP_FROM	= $(shell find _* \( -type f -or -type l \) -not -iname '*.j2')
-RCFILES_CP_TO   = $(patsubst _%,$(OUTDIR)/.%,$(RCFILES_CP_FROM))
+# List non-hidden files that are not a templates. To be copied without processing.
+RCFILES_CPIN 	= $(shell find $(TPLDIR) \( -type f -or -type l \) -not -iname '.*' -not -iname '*.j2')
+RCFILES_CPOUT   = $(subst /_,/.,$(patsubst $(TPLDIR)/%,$(OUTDIR)/%,$(RCFILES_CPIN)))
 
 # Exclude unwanted files from being copied.
-RCFILES_CP_TO	:= $(filter-out %.swp,$(RCFILES_CP_TO))
-RCFILES_CP_TO	:= $(filter-out %.swo,$(RCFILES_CP_TO))
-RCFILES_CP_TO	:= $(filter-out %.pyc,$(RCFILES_CP_TO))
+RCFILES_CPOUT	:= $(filter-out %.swp,$(RCFILES_CPOUT))
+RCFILES_CPOUT	:= $(filter-out %.swo,$(RCFILES_CPOUT))
+RCFILES_CPOUT	:= $(filter-out %.pyc,$(RCFILES_CPOUT))
 
 # adjust RCFILES_OUT depending on kernel (i.e. OS)
 ifneq ($(KERNEL),linux)
@@ -58,27 +71,32 @@ ifneq ($(KERNEL),darwin)
 	RCFILES_OUT := $(filter-out $(OUTDIR)/.slate%,$(RCFILES_OUT))
 endif
 
+### Custom functions ################################################
+make_target_dir=@test -d $(@D) || $(MKDIR) $(@D)
 
+### Generic recipes #################################################
+$(OUTDIR)/%: $$(subst /.,/_,$(TPLDIR)/%.j2) $(CONFIG) $(wildcard include/*.inc)
+	$(make_target_dir)
+	@test -d $(@D) || $(MKDIR) $(@D)
+	$(J2) $(J2_OPTS) $(<) $(CONFIG) > $(@)
+
+$(OUTDIR)/%: $$(subst /.,/_,$(TPLDIR)/%) $(CONFIG)
+	$(make_target_dir)
+	$(CP) $(<) $(@)
+
+### Targets #########################################################
 .PHONY: all copy-dry copy-real
 
-all: $(RCFILES_OUT) $(RCFILES_CP_TO)
+all: $(RCFILES_OUT) $(RCFILES_CPOUT)
 
 copy-dry: all
-	$(RSYNC) --exclude-from=config/exclude.txt -avPhi -n $(OUTDIR)/ $(HOME)/
+	$(RSYNC) --exclude-from=config/exclude.txt $(RSYNC_OPTS) -n $(OUTDIR)/ $(HOME)/
 
 copy-real: all
-	$(RSYNC) --exclude-from=config/exclude.txt -avPhi $(OUTDIR)/ $(HOME)/
+	$(RSYNC) --exclude-from=config/exclude.txt $(RSYNC_OPTS) $(OUTDIR)/ $(HOME)/
 
 diff: all
 	$(DIFF) --exclude-from=config/exclude.txt -wr $(HOME)/ $(OUTDIR)/ | $(GREP) -v "^Only in $(HOME)/[^:]*:" || true
-
-$(OUTDIR)/.%: _% $(CONFIG)
-	@test -d $(@D) || $(MKDIR) $(@D)
-	$(CP) $(<) $(@)
-
-$(OUTDIR)/.%: _%.j2 $(CONFIG) $(wildcard include/*.inc)
-	@test -d $(@D) || $(MKDIR) $(@D)
-	$(J2) $(<) $(CONFIG) > $(@)
 
 clean:
 	rm -rf $(OUTDIR)
