@@ -96,7 +96,7 @@ copy-real: all
 	$(RSYNC) --exclude-from=config/exclude.txt $(RSYNC_OPTS) $(OUTDIR)/ $(HOME)/
 
 diff: all
-	$(DIFF) --exclude-from=config/exclude.txt -wr $(HOME)/ $(OUTDIR)/ | $(GREP) -v "^Only in $(HOME)/[^:]*:" || true
+	LC_ALL=C $(DIFF) --exclude-from=config/exclude.txt -wr $(HOME)/ $(OUTDIR)/ | $(GREP) -v "^Only in $(HOME)/[^:]*:" || true
 
 clean:
 	rm -rf $(OUTDIR)
