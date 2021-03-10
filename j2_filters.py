@@ -2,6 +2,7 @@
 import os
 import sys
 import pipes
+import itertools
 from functools import partial
 
 assert sys.version_info >= (2,5), "Need at least Python 2.5."
@@ -31,6 +32,9 @@ path_join = lambda l: None if not all(l) else os.path.join(*l)
 debug_type = lambda x: type(x)
 
 ### Misc filters ####################################################
+combinations = lambda x, n: itertools.combinations(x, n)
+permutations = lambda x, n: itertools.permutations(x, n)
+
 def hr(text=None, width=80, fill='#'):
     ''' Creates an ascii horizontal ruler.
     '''
