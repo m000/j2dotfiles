@@ -29,4 +29,9 @@
 	smudge = git-lfs smudge %f
 	required = true
 
+{% for from, to in gitconfig.url_rewrites %}
+[url "{{to}}"]
+	insteadOf = {{from}}
+{% endfor %}
+
 ; vim:ft=dosini
