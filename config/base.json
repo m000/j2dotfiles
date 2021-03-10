@@ -21,6 +21,7 @@
     "path": {
         "pin": "$HOME/software/pin",
         "cliutils": "$HOME/git/cliutils",
+        "nodejs": "$HOME/software/node",
         "ohmyzsh": "$HOME/.oh-my-zsh",
         "golang": "$HOME/software/go",
         "golang_workspace": "$HOME/go"

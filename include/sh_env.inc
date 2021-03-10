@@ -32,6 +32,12 @@
         {%- do path_env.append('"$GOPATH/bin"') -%}
     {%- endif -%}
 
+    {#- Node.js -#}
+    {%- if path.nodejs is dir -%}
+        {%- do exports.append(('NODEJS_ROOT', '"{0}"'.format(path.nodejs))) -%}
+        {%- do path_env.append('"$NODEJS_ROOT/bin"') -%}
+    {%- endif -%}
+
     {#- Homebrew -#}
     {%- if path.homebrew is dir -%}
         {%- do exports.append(('HOMEBREW_PATH', '"{0}/bin":"{0}/sbin":"{0}/share/npm/bin"'.format(path.homebrew))) -%}
