@@ -138,6 +138,24 @@ mkbak() {
     fi
 }
 
+# archive conversion functions
+{% with cat="pv" if "pv" is installed else "cat" %}
+{% for (exe1, ext1), (exe2, ext2) in compressors|permutations(2) %}
+function {{ext1}}2{{ext2}}() {
+    local errors=0
+    local f
+    for f in "$@"; do
+        if [ "${f%%.{{ext1}}}" != "${f}" ]; then
+            {{cat}} "$f" | {{exe1}} -d | {{exe2}} > "${f%%.{{ext1}}}".{{ext2}}
+        else
+            printf "Input file %q does not have .%s extension.\n" "$f" "{{ext1}}" >&2
+        fi
+    done
+    return $errors
+}
+{% endfor %}
+{% endwith %}
+
 # remove BOM marker from UTF-8 files
 utf8-debom() {
 {% if "gsed" is installed %}

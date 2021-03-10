@@ -1,5 +1,6 @@
 {
     "browsers": [],
+    "compressors": [["gzip", "gz"], ["xz", "xz"], ["bzip2", "bz2"]],
     "shell": {
         "ohmyzsh_theme": "gnzh"
     },
