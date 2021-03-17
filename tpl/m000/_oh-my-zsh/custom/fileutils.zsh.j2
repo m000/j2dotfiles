@@ -156,6 +156,47 @@ function {{ext1}}2{{ext2}}() {
 {% endfor %}
 {% endwith %}
 
+# simple diff for json files
+{% if "jq" is installed %}
+function jsondiff() {
+    local f1 f2
+    local diffargs=()
+    local end_of_args=0
+    while (( $# > 0 )); do
+        case "$1" in
+        --)
+            if (( ! ${end_of_args} )); then
+                end_of_args=1
+                shift
+                continue
+            fi
+            ;&
+        -*)
+            if (( ! ${end_of_args} )); then
+                diffargs+=("$1")
+                shift
+                continue
+            fi
+            ;&
+        *)
+            if [ "$f1" = "" ]; then
+                f1="$1"
+            elif [ "$f2" = "" ]; then
+                f2="$1"
+            else
+                printf "Too many file arguments.\n" >&2
+                return 1
+            fi
+            shift
+            ;;
+        esac
+    done
+    diff ${=diffargs} <(jq . < "$f1") <(jq . < "$f2")
+}
+{% else %}
+# jsondiff: not available in this setup
+{% endif %}
+
 # remove BOM marker from UTF-8 files
 utf8-debom() {
 {% if "gsed" is installed %}
