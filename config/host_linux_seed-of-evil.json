@@ -1,0 +1,14 @@
+{
+    "hostid": "seed-of-evil-linux",
+    "hostname": "seed-of-evil",
+    "os": {
+        "type": "linux",
+        "flavor": "debian"
+    },
+    "shell": {
+        "ohmyzsh_theme": "intheloop"
+    },
+    "path": {
+        "ohmyzsh": "$HOME/.oh-my-zsh"
+    }
+}
