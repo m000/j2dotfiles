@@ -43,6 +43,73 @@ gfixup() {
     git commit -m $m
 }
 
+# Remove and cleanup a branch if merged with origin/master.
+gbclean() {
+    local -A opts=( -r origin -b master )
+    local blocal blocalhead
+    local remote bremote
+    local mergebase
+    local rmlocal rmremote
+
+    zparseopts -D -E -K -A opts r: b:
+
+    if (( $# < 1 )); then
+        cat >&2 <<-EOF
+		No branch specified. Usage:
+		    $0 [-r REMOTE] [-b RBRANCH] LBRANCH
+
+		Mandatory arguments:
+		    LBRANCH       Local branch to delete.
+
+		Optional arguments:
+		    -r REMOTE     Use REMOTE repository instead of origin.
+		    -b RBRANCH    Use RBRANCH branch on REMOTE instead of master.
+		EOF
+        return 1
+    fi
+
+    remote="$opts[-r]"
+    bremote="$opts[-b]"
+    rmlocal=0
+    rmremote=0
+    for blocal in $@; do
+        blocalhead=$(git rev-parse --verify "$blocal" 2>/dev/null)
+        if [ $? != 0 ]; then
+            printf "Local branch %s does not exist.\n" "$blocal" >&2
+            continue
+        fi
+        mergebase=$(git merge-base "$blocal" "$remote/$bremote")
+
+        if [ "$mergebase" != "$blocalhead" ]; then
+            printf "Merge base of %s and %s does not match the head of %s.\n" "$remote"/"$bremote" "$blocal" "$blocal" >&2
+            continue
+        fi
+
+        if ! git ls-remote --exit-code --heads "$remote" "$blocal"; then
+            printf "Remote branch %s/%s does not exist. Skipping removal.\n" "$remote" "$blocal" >&2
+        else
+            read -q "REPLY?Remove remote branch $remote/$blocal? "
+            if echo "" && [ "$REPLY" = "y" ]; then
+                git push "$remote" --delete "$blocal"
+                ((rmremote++))
+            fi
+        fi
+
+        if [ "$(git branch --show-current)" = "$blocal" ]; then
+            printf "Skipping removal of current branch %s.\n" "$blocal" >&2
+        else
+            read -q "REPLY?Remove local branch $blocal? "
+            if echo "" && [ "$REPLY" = "y" ]; then
+                git branch -D "$blocal"
+                ((rmlocal++))
+            fi
+        fi
+    done
+
+    git fetch -p
+    printf "Removed %d local branches and %d remote branches.\n" "$rmlocal" "$rmremote"
+}
+
 # Inspects modified files and prompts for staging.
 # TODO: Implement using porcelain. https://www.stefanjudis.com/today-i-learned/the-short-version-of-git-status-and-the-close-but-different-porcelain-mode/
 gstagei() {
