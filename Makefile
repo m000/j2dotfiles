@@ -1,7 +1,7 @@
 # Tools used by the Makefile.
 CP          = cp -f
 MKDIR       = mkdir -vp
-DIFF        = diff
+DIFF        = diff --color=always
 GREP        = grep
 RSYNC       = rsync
 RSYNC_OPTS  = -avhi -c --no-t
@@ -43,7 +43,7 @@ ifeq ($(realpath $(CONFIG)),)
 CONFIG_HOST     = config/host_$(KERNEL)_$(HOSTNAME_SHORT).json
 endif
 ifeq ($(realpath $(CONFIG_HOST)),)
-$(error No configuration file for this host)
+$(error No configuration file for this host in $(CONFIG_HOST))
 endif
 
 CONFIG          = $(CONFIG_BASE) $(CONFIG_OS) $(CONFIG_HOST)
