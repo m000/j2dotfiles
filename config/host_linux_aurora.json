@@ -1,0 +1,12 @@
+{
+    "hostid": "aurora-linux",
+    "hostname": "aurora",
+    "shell": {
+        "ulimit": {"c": "unlimited"},
+        "iterm_tmux_integration": false,
+        "ohmyzsh_theme": "kphoen"
+    },
+    "path": {
+        "texlive": "$HOME/software/texlive"
+    }
+}
