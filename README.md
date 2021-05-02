@@ -10,7 +10,8 @@ Jinja2 is invoked via the [j2cli](https://github.com/m000/j2cli)<sup>1</sup>
 command-line wrapper.
 The dot files templates are first rendered in a local directory
 (default: `output`) and then copied to your home directory using
-[rsync](https://rsync.samba.org/).
+[rsync](https://rsync.samba.org/). This allows for inspection of
+changes before overwritting your current set of dot files.
 The process is automated using [GNU Make](https://www.gnu.org/software/make/).
 
 ## How to use it
@@ -25,6 +26,26 @@ git
 
 
 TBA
+```
+apt-get install zsh git openssh-client python3-virtualenv jq make
+
+ssh-keygen -t ed25519
+
+virtualenv -p python3 pyenv
+. ./pyenv/bin/activate
+pip install -r requirements.txt 
+
+make
+
+vi config/...
+
+make
+
+install ohmyzsh
+
+run
+```
+
 
 ### Python environment
 Install the required Python packages in a local environment:
