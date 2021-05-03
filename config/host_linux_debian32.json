@@ -10,7 +10,6 @@
         "ohmyzsh_theme": "mh"
     },
     "path": {
-        "pin": "$HOME/software/pin",
         "cliutils": "$HOME/git/cliutils",
         "ohmyzsh": "$HOME/.oh-my-zsh"
     }

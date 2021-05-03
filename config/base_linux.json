@@ -8,6 +8,10 @@
         "use_default_llvm": true
     },
     "path": {
-        "java": "/usr/lib/jvm/default-java"
+        "gcloud_sdk": "$HOME/software/google-cloud-sdk",
+        "java": "/usr/lib/jvm/default-java",
+        "ocaml_opam": "$HOME/software/ocaml",
+        "rust_cargo": "$HOME/software/cargo",
+        "rust_rustup": "$HOME/software/rust"
     }
 }

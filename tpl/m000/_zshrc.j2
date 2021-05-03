@@ -100,15 +100,11 @@ bindkey '[1;6C' forward-word
 {% include 'include/sh_locale.inc' %}
 {% include 'include/sh_aliases.inc' %}
 {% include 'include/sh_functions.inc' %}
-{% include 'include/sh_perl5.inc' %}
+{% include 'include/tools.inc' %}
+
 alias j=jump
 
 {{ "Initialize other zsh-specific stuff" | hr }}
-{% if "$HOME/.opam/opam-init/init.zsh" is file %}
-### OPAM configuration
-source "$HOME"/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
-{% endif %}
-
 # git/svn prompt should not mark repository as dirty for untracked files
 export DISABLE_UNTRACKED_FILES_DIRTY=true
 
@@ -125,10 +121,6 @@ ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX={{ shell.iterm_tmux_integration | bool 
 source "$HOME/.iterm2_shell_integration.zsh"
 {% endif %}
 
-{% if path.z is file %}
-### z - https://github.com/rupa/z
-source {{ path.z | sh_quote }}
-{%- endif %}
 
 {% endwith %}
 {#
