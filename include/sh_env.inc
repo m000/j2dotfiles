@@ -1,3 +1,4 @@
+{% import 'include/jinja2_macros.inc' as macros %}
 {{ "Influential environment variables" | hr }}
 ### path
 {# To build the PATH environment variable we create a list which we then join and print.  #}
@@ -10,35 +11,6 @@
         {%- do path_env.append('/sbin') -%}
     {%- endif -%}
 
-    {#- Intel Pin -#}
-    {%- if path.pin is dir -%}
-        {%- do exports.append(('PIN_ROOT', '"{0}"'.format(path.pin))) -%}
-        {%- do path_env.append('"$PIN_ROOT"') -%}
-    {%- endif -%}
-
-    {#- LLVM -#}
-    {%- if path.llvm is dir and not shell.use_default_llvm -%}
-        {%- do exports.append(('LLVM_ROOT', '"{0}"'.format(path.llvm))) -%}
-        {%- do path_env.insert(0, '"$LLVM_ROOT/bin"') -%}
-    {%- endif -%}
-
-    {#- Go -#}
-    {%- if path.golang is dir -%}
-        {%- do exports.append(('GOLANG_ROOT', '"{0}"'.format(path.golang))) -%}
-        {%- do path_env.append('"$GOLANG_ROOT/bin"') -%}
-    {%- endif -%}
-    {%- if path.golang_workspace is dir -%}
-        {%- do exports.append(('GOPATH', '"{0}"'.format(path.golang_workspace))) -%}
-        {%- do path_env.append('"$GOPATH/bin"') -%}
-    {%- endif -%}
-
-    {#- Node.js -#}
-    {%- if path.nodejs is dir -%}
-        {%- do exports.append(('NODEJS_ROOT', '"{0}"'.format(path.nodejs))) -%}
-        {%- do path_env.append('"$NODEJS_ROOT/bin"') -%}
-    {%- endif -%}
-
-    {#- Homebrew -#}
     {%- if path.homebrew is dir -%}
         {%- do exports.append(('HOMEBREW_PATH', '"{0}/bin":"{0}/sbin":"{0}/share/npm/bin"'.format(path.homebrew))) -%}
         {%- do path_env.insert(0, '"$HOMEBREW_PATH"') -%}
@@ -70,16 +42,6 @@
         {%- do path_env.insert(0, '"$HOMEBREW_CURLBIN"') -%}
     {%- endif -%}
 
-    {#- Java -#}
-    {%- if path.java is dir -%}
-        {%- do exports.append(('JAVA_HOME', '"{0}"'.format(path.java))) -%}
-    {%- endif -%}
-
-    {#- Haskell package manager -#}
-    {%- if "$HOME/.cabal/bin" is dir -%}
-        {%- do path_env.insert(0, '"$HOME"/.cabal/bin') -%}
-    {%- endif -%}
-
     {#- Home bin -#}
     {%- if "$HOME/bin" is dir -%}
         {%- do path_env.append('"$HOME"/bin') -%}
@@ -98,29 +60,6 @@ export PATH={{ path_env|join(':') }}
 {%- endwith %}
 
 ### other stuff
-{% if "vim" is installed -%}
-export EDITOR=vim
-export SVN_EDITOR=vim
-{%- endif %}
-
-{% if not shell.use_default_llvm %}
-if [ "$LLVM_ROOT" != "" ]; then
-    export LD_LIBRARY_PATH="$LLVM_ROOT"/lib:"$LD_LIBRARY_PATH"
-fi
-{% endif %}
-
-{#
-#export RSTUDIO_WHICH_R=/opt/homebrew/bin/R
-#export JAVA_HOME="/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home"
-#export PYTHONPATH=/opt/homebrew/lib/python${PYTHONPATH:+:$PYTHONPATH}
-#export PATH="$HOME/.cabal/bin:/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
-# export SSH_KEY_PATH="~/.ssh/dsa_id"
-# Virtualenv Wrapper
-if [ -f /opt/homebrew/bin/virtualenvwrapper.sh ]; then
-    export WORKON_HOME="$HOME"/Library/PyEnv
-    source /opt/homebrew/bin/virtualenvwrapper.sh
-fi
-#}
 
 {{ "OS-specific environment settings for %s" | format(os.type) | hr }}
 {% if os.type == "osx" -%}

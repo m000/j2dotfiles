@@ -8,6 +8,9 @@
         "use_default_llvm": true
     },
     "path": {
-        "java": "/usr/lib/jvm/default-java"
+        "java": "/usr/lib/jvm/default-java",
+        "ocaml_opam": "$HOME/software/ocaml",
+        "rust_cargo": "$HOME/software/cargo",
+        "rust_rustup": "$HOME/software/rust"
     }
 }
