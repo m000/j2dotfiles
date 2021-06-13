@@ -27,6 +27,7 @@
         "nodejs": "$HOME/software/node",
         "ocaml_opam": "$HOME/.opam",
         "ohmyzsh": "$HOME/.oh-my-zsh",
-        "rust_cargo": "$HOME/.cargo"
+        "rust_cargo": "$HOME/.cargo",
+        "z3": "$HOME/software/z3"
     }
 }

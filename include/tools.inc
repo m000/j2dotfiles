@@ -22,6 +22,11 @@
 {% include 'include/tools/texlive.inc' %}
 {% include 'include/tools/vim.inc' %}
 
+{% if "$HOME/.local/bin" is dir -%}
+# Local binaries.
+{% do tools_path.insert(0, '"$HOME/.local/bin"') %}
+{%- endif -%}
+
 # Active tools in order: {{ tools_active }}
 {{ macros.env_from_list(tools_exports) -}}
 {{ macros.pathvar_update("PATH", tools_path) -}}
