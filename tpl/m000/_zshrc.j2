@@ -1,3 +1,4 @@
+{% with shell_type='zsh' %}
 {% if path.ohmyzsh is dir %}
 {% import 'include/jinja2_macros.inc' as macros %}
 {{ "Oh-My-Zsh stuff" | hr }}
@@ -116,7 +117,7 @@ ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX={{ shell.iterm_tmux_integration | bool 
 # enable iterm2 integration when ssh-ing to this host
 source "$HOME/.iterm2_shell_integration.zsh"
 {% endif %}
-
+{% endwith %}
 
 {#
 # vim:ft=sh
