@@ -1,3 +1,4 @@
+{% with shell_type='zsh' %}
 {% if path.ohmyzsh is dir %}
 {% import 'include/jinja2_macros.inc' as macros %}
 {{ "Oh-My-Zsh stuff" | hr }}
@@ -129,6 +130,7 @@ source "$HOME/.iterm2_shell_integration.zsh"
 source {{ path.z | sh_quote }}
 {%- endif %}
 
+{% endwith %}
 {#
 # vim:ft=sh
 #}

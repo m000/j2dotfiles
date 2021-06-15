@@ -1,3 +1,4 @@
+{% with shell_type='bash' %}
 {% import 'include/jinja2_macros.inc' as macros %}
 export SVN_EDITOR=vim
 
@@ -37,6 +38,7 @@ function vlc_stream_audio() {
 source {{ path.z | sh_quote }}
 {%- endif %}
 
+{% endwith %}
 {#
 # vim:ft=sh
 #}
