@@ -127,5 +127,52 @@ gstagei() {
         echo ""
     done
 }
+
+# Checks out a pull request to a local branch.
+# If the branch already exists, it updates it to the latest version of the pull request.
+gprco() {
+    local -A opts=( -r origin -b master )
+    local n
+    local lbranch
+    local rbranch
+    local count
+
+    zparseopts -D -E -K -A opts r:
+
+    n=$(($1))
+    rbranch="pull/$n/head"
+    lbranch="PR$n"
+
+    if (( $# != 1 )); then
+        cat >&2 <<-EOF
+		$0: Checkout a pull request as a local branch.
+
+		Usage:
+		    $0 [-r REMOTE] PRNUM
+
+		Mandatory arguments:
+		    PRNUM         Pull request number.
+
+		Optional arguments:
+		    -r REMOTE     Use REMOTE repository instead of origin.
+		EOF
+        return 1
+    elif (( n == 0 )); then
+        printf "%s: Invalid pull request number supplied.\n" "$0" >&2
+        return 1
+    fi
+
+    count=$(git ls-remote "$opts[-r]" "$rbranch" | wc -l)
+    if (( $count == 0 )); then
+        printf "%s: Pull request #%d not found.\n" "$0" "$n" >&2
+        return 1
+    elif (( $count > 1 )); then
+        printf "%s: More than one pull requests for #%d. Weird...\n" "$0" "$n" >&2
+        return 1
+    fi
+
+    git fetch "$opts[-r]" "$rbranch":"$lbranch"
+    git checkout "$lbranch"
+}
 {% endif %}
-# vim: ft=zsh expandtab ts=4 sts=4 sw=4 :
+# vim: ft=zsh expandtab ts=5 sts=4 sw=4 :
