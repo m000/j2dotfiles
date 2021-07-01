@@ -1,6 +1,9 @@
+apt-get update
 apt-get install zsh git openssh-client python3-virtualenv jq make
 
 ssh-keygen -t ed25519
+
+install ohmyzsh
 
 virtualenv -p python3 pyenv
 . ./pyenv/bin/activate
@@ -11,7 +14,7 @@ make
 vi config/...
 
 make
+make diff
+make copy-real
 
-install ohmyzsh
-
-run
+restart session
