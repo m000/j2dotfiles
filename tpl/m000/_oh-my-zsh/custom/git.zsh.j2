@@ -81,7 +81,7 @@ gbclean() {
         mergebase=$(git merge-base "$blocal" "$remote/$bremote")
 
         if [ "$mergebase" != "$blocalhead" ]; then
-            printf "Merge base of %s and %s does not match the head of %s.\n" "$brmerge" "$blocal" "$blocal" >&2
+            printf "Merge base of %s and %s does not match the head of %s.\n" "$remote"/"$bremote" "$blocal" "$blocal" >&2
             continue
         fi
 
