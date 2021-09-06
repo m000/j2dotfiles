@@ -57,6 +57,9 @@ ZSH_DISABLE_COMPFIX="true"
     {% if path.golang is dir -%}
         {% do plugins.append("golang") %}
     {% endif %}
+    {% if "kubectl" is installed -%}
+        {% do plugins.append("kubectl") %}
+    {% endif %}
 
     {#- os-specific plugins #}
     {% if os.type == "osx" %}
