@@ -8,6 +8,7 @@
         "use_default_llvm": true
     },
     "path": {
+        "ffmpeg": "$HOME/software/ffmpeg",
         "gcloud_sdk": "$HOME/software/google-cloud-sdk",
         "java": "/usr/lib/jvm/default-java",
         "ocaml_opam": "$HOME/software/ocaml",

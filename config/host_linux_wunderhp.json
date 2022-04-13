@@ -1,0 +1,17 @@
+{
+    "hostid": "wunderhp-linux",
+    "hostname": "wunderhp",
+    "shell": {
+        "ulimit": {"c": "unlimited"},
+        "iterm_tmux_integration": false,
+        "ohmyzsh_theme": "kphoen"
+    },
+    "path": {
+        "texlive": "$HOME/software/texlive"
+    },
+    "gitconfig": {
+        "core": {
+            "pager": "delta"
+        }
+    }
+}
