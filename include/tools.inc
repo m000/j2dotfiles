@@ -10,6 +10,7 @@
 {%- set tools_infopath=[None,] -%}
 
 # Tools setup.
+{% include 'include/tools/ffmpeg.inc' %}
 {% include 'include/tools/gcloud_sdk.inc' %}
 {% include 'include/tools/golang.inc' %}
 {% include 'include/tools/intel_pin.inc' %}

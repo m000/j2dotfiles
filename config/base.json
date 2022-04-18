@@ -21,6 +21,7 @@
     },
     "path": {
         "cliutils": "$HOME/git/cliutils",
+        "ffmpeg": "$HOME/software/ffmpeg",
         "golang": "$HOME/software/go",
         "golang_workspace": "$HOME/go",
         "intel_pin": "$HOME/software/pin",
