@@ -207,6 +207,18 @@ utf8-debom() {
     $SED -i '1s/^\xEF\xBB\xBF//' $@
 }
 
+{% if ["jq", "sponge"] is installed %}
+# reformat json files in place
+function jsonf() {
+    while (( $# > 0 )); do
+        jq . < "$1" | sponge "$1"
+        shift
+    done
+}
+{% else %}
+# jsonf: not available in this setup
+{% endif %}
+
 # remove BOM marker from UTF-8 files
 utf8-debom() {
 {% if "gsed" is installed %}
