@@ -156,8 +156,8 @@ function {{ext1}}2{{ext2}}() {
 {% endfor %}
 {% endwith %}
 
-# simple diff for json files
 {% if "jq" is installed %}
+# simple diff for json files
 function jsondiff() {
     local f1 f2
     local diffargs=()
@@ -196,6 +196,16 @@ function jsondiff() {
 {% else %}
 # jsondiff: not available in this setup
 {% endif %}
+
+# remove BOM marker from UTF-8 files
+utf8-debom() {
+{% if "gsed" is installed %}
+    local SED=gsed
+{% else %}
+    local SED=sed
+{% endif %}
+    $SED -i '1s/^\xEF\xBB\xBF//' $@
+}
 
 # remove BOM marker from UTF-8 files
 utf8-debom() {
