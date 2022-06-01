@@ -107,7 +107,7 @@ set ruler " Show ruler
 "match LongLineWarning '\%120v.*' " Error format when a line is longer than 120
 set laststatus=2                                "status line always on
 set statusline=%t                               "tail of the filename
-set statusline+=%{fugitive#statusline()}        "git status
+"set statusline+=%{fugitive#statusline()}        "git status
 "set statusline+=[%{strlen(&fenc)?&fenc:'none'}, "file encoding
 "set statusline+=%{&ff}]                         "file format
 set statusline+=%h                              "help file flag
