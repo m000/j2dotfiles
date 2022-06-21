@@ -16,6 +16,10 @@ alias vi=vim
 {# on mac: sudo ln -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" /usr/local/bin/ #}
 alias slt="subl -a"
 {% endif %}
+### misc
+{% if "python3" is installed %}
+alias uuid4='python3 -c "import uuid; print(uuid.uuid4())"'
+{% endif %}
 
 {{ "OS-specific aliases for %s" | format(os.type) | hr }}
 {% if os.type == "osx" -%}
@@ -41,8 +45,5 @@ alias xpra="/Applications/Xpra.app/Contents/MacOS/Xpra"
 {%- endif %}
 
 {#
-### old/disabled aliases #####################################################
-alias synergys='synergys -a 127.0.0.1 -f'
 # vim:ft=sh
 -#}
-
