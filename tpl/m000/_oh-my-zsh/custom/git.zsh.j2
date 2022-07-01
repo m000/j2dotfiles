@@ -174,5 +174,60 @@ gprco() {
     git fetch "$opts[-r]" "$rbranch":"$lbranch"
     git checkout "$lbranch"
 }
+
+{% if ["jq",] is installed %}
+# Rebases all branches against the rebase_target branch.
+# Outputs the results of rebases as json for further processing.
+# Branches are grouped in three categories in the json output:
+#   - delete: Fully merged. Safe to delete.
+#   - keep: Rebase succeeded, but contain unmerged work.
+#   - failed: Rebase failed. Manual inspection required.
+grebaseall () {
+    local -A opts=(
+        -t origin/master
+        -e "master acceptance develop fresco stach spar wunderware"
+    )
+    zparseopts -D -E -K -A opts t: e:
+    local rebase_target="$opts[-t]"
+    local exclude_branches=("${(@s/ /)opts[-e]}")  # split excluded branches into array
+    local start_branch="$(git rev-parse --abbrev-ref HEAD)"
+
+    local failed=()
+    local delete=()
+    local keep=()
+
+    for branch in $(git for-each-ref --format="%(refname:lstrip=2)" refs/heads/); do
+        if (($exclude_branches[(Ie)$branch])); then
+            continue
+        fi
+
+        # attempt rebase and cleanup if it fails
+        if ! git rebase "$rebase_target" "$branch" 1>&2; then
+            git rebase --abort
+            failed+=("$branch")
+            continue
+        fi
+
+        # successful rebase
+        if [ "$(git merge-base "$branch" "$rebase_target")" = "$(git rev-parse "$branch")" ]; then
+            # branch and rebase target match -> rebased branch can be deleted
+            delete+=("$branch")
+        else
+            # branch and rebase target don't match -> there are unmerged changes
+            keep+=("$branch")
+        fi
+    done
+
+    # return to starting branch
+    git checkout "$start_branch" 1>&2
+
+    # dump results as json
+    jq -n '{"keep": $ARGS.positional[0], "delete": $ARGS.positional[1], "failed": $ARGS.positional[2]}' \
+        --jsonargs \
+        "$(jq -n '$ARGS.positional' --args -- "${keep[@]}")" \
+        "$(jq -n '$ARGS.positional' --args -- "${delete[@]}")" \
+        "$(jq -n '$ARGS.positional' --args -- "${failed[@]}")"
+}
+{% endif %}
 {% endif %}
 # vim: ft=zsh expandtab ts=5 sts=4 sw=4 :
