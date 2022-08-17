@@ -52,7 +52,7 @@ CONFIG          = $(CONFIG_BASE) $(CONFIG_OS) $(CONFIG_HOST)
 RCFILES_IN      = $(shell find $(TPLDIR) \( -type f -or -type l \) -not -iname '.*' -iname '*.j2')
 RCFILES_OUT     = $(subst /_,/.,$(patsubst $(TPLDIR)/%.j2,$(OUTDIR)/%,$(RCFILES_IN)))
 
-# List non-hidden files that are not a templates. To be copied without processing.
+# List non-hidden files that are not templates. To be copied without processing.
 RCFILES_CPIN 	= $(shell find $(TPLDIR) \( -type f -or -type l \) -not -iname '.*' -not -iname '*.j2')
 RCFILES_CPOUT   = $(subst /_,/.,$(patsubst $(TPLDIR)/%,$(OUTDIR)/%,$(RCFILES_CPIN)))
 
