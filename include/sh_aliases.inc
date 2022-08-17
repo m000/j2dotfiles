@@ -19,6 +19,8 @@ alias slt="subl -a"
 ### misc
 {% if "python3" is installed %}
 alias uuid4='python3 -c "import uuid; print(uuid.uuid4())"'
+alias json2yaml="python3 -c 'import json, sys, ruamel.yaml as Y; Y.YAML().dump(json.load(sys.stdin), sys.stdout)'"
+alias yaml2json="python3 -c 'import json, os, sys, ruamel.yaml as Y; print(json.dumps(Y.YAML(typ=\"safe\").load(sys.stdin), indent=int(os.getenv(\"JSON_INDENT\") or 2)))'"
 {% endif %}
 
 {{ "OS-specific aliases for %s" | format(os.type) | hr }}
