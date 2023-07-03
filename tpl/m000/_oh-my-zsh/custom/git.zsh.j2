@@ -37,10 +37,10 @@ gfixup() {
         printf "%s: nothing to do\n" "$0" >&2
         return
     fi
-
-    local m=$(git log --format=%B HEAD~$((n))..HEAD~$((n-1)))
+    local m=$(git log --format=%B HEAD~$((n-1))^!)
+    local a=$(git log --format='%aN <%aE>' HEAD~$((n-1))^!)
     git reset --soft HEAD~$((n))
-    git commit -m $m
+    git commit -m $m --author=$a
 }
 
 # Remove and cleanup a branch if merged with origin/master.
