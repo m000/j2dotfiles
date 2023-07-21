@@ -229,5 +229,11 @@ grebaseall () {
         "$(jq -n '$ARGS.positional' --args -- "${failed[@]}")"
 }
 {% endif %}
+
+# Shortcuts for viewing/dropping/popping stashed changes.
+unaliasif gsv gsd gsp
+gsv() {local n=$(($1)); git stash show -p stash@{$n}}
+gsd() {local n=$(($1)); git stash drop stash@{$n}}
+gsp() {local n=$(($1)); git stash pop stash@{$n}}
 {% endif %}
 # vim: ft=zsh expandtab ts=5 sts=4 sw=4 :
