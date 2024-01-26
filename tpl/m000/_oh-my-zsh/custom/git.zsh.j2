@@ -231,9 +231,35 @@ grebaseall () {
 {% endif %}
 
 # Shortcuts for viewing/dropping/popping stashed changes.
-unaliasif gsv gsd gsp
+unaliasif gsl gsv gsd gsp gsm
+gsl() {git stash list}
 gsv() {local n=$(($1)); git stash show -p stash@{$n}}
 gsd() {local n=$(($1)); git stash drop stash@{$n}}
 gsp() {local n=$(($1)); git stash pop stash@{$n}}
+{% if ["tac", "sponge"] is installed %}
+# Changes the message for the specified git stash.
+gsm() {
+    if (( $# != 2 )); then
+        cat >&2 <<-EOF
+		Usage:
+		    $0 STASH_NUMBER NEW_MESSAGE
+		EOF
+        return 1
+    fi
+    git rev-parse --is-inside-work-tree >/dev/null || return 1
+
+    local gitroot="$(git rev-parse --show-toplevel)"
+    local gitstash="$gitroot/.git/logs/refs/stash"
+    local stashn=$(($1))
+    local stashm="$2"
+
+    cp -f "$gitstash" "$gitstash".bak
+    tac "$gitstash" | awk -F': ' -vstashn="$stashn" -vstashm="$stashm" '
+        BEGIN { OFS=FS }
+        NR == (stashn + 1) { $2 = stashm }
+        { print $0 }
+    ' | tac | sponge "$gitstash"
+}
+{% endif %}
 {% endif %}
 # vim: ft=zsh expandtab ts=5 sts=4 sw=4 :
