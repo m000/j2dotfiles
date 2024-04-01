@@ -1,0 +1,37 @@
+" Editor ************************************************************
+set autoindent " indent new line by the same amount as its previous line
+set nowrap " do not wrap long lines
+set linebreak " when wrapping, break line at a word limit
+set sidescrolloff=4 " start scrolling 4 characters before the edge
+set updatetime=1000 " keypress timeout before flushing swapfile - affects gitgutter update
+
+" Searching *********************************************************
+set hlsearch " highlight search
+set incsearch " start searching as you type
+set ignorecase " ignore case when searching
+set smartcase  " ignore case only when all pattern is lowercase
+
+" Status line *******************************************************
+set laststatus=2 " always show status bar
+set showcmd " show commands as they're being typed
+set statusline=
+set statusline+=%t " tail of the filename
+set statusline+=%h " help file flag
+set statusline+=%m " modified flag
+set statusline+=%r " readonly flag
+set statusline+=\ •\ [%{&fenc}]%y " file encoding & detected type
+set statusline+=%= " left/right separator
+set statusline+=%c,%l/%L\ %P " cursor coordinates
+set noruler " deprecated in favour of statusline -- https://vi.stackexchange.com/a/39921
+
+" Visual helpers ****************************************************
+set number  " show line numbers
+set numberwidth=4  " pad numbers to 4 characters
+set cursorline " highlight cursor line
+"set cursorcolumn " highlight cursor column
+set showmatch " show matching
+set colorcolumn=80 " highlight specific columns
+
+" Modelines *********************************************************
+set modeline " enable modelines
+set modelines=2 " scan first/last two lines for a modeline

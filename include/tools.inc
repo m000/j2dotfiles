@@ -17,6 +17,7 @@
 {% include 'include/tools/java.inc' %}
 {% include 'include/tools/llvm.inc' %}
 {% include 'include/tools/nodejs.inc' %}
+{% include 'include/tools/nvim.inc' %}
 {% include 'include/tools/ocaml.inc' %}
 {% include 'include/tools/perl5.inc' %}
 {% include 'include/tools/rupa_z.inc' %}

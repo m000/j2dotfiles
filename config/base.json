@@ -26,6 +26,7 @@
         "golang_workspace": "$HOME/go",
         "intel_pin": "$HOME/software/pin",
         "nodejs": "$HOME/software/node",
+        "nvim": "$HOME/software/nvim",
         "ocaml_opam": "$HOME/.opam",
         "ohmyzsh": "$HOME/.oh-my-zsh",
         "rust_cargo": "$HOME/.cargo",
