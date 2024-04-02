@@ -92,12 +92,14 @@ set smartcase  " Ignore case when searching lowercase
 
 " Colors **********************************************************************
 syntax on " syntax highlighting
-set background=dark
+"set background=dark
 "set t_Co=256 " 256 colors
 "colorscheme solarized
 colorscheme darkblue
 "colorscheme hybrid
 "colorscheme monokai
+"colorscheme amber
+"colorscheme brown
 
 
 " Status Line *****************************************************************
@@ -121,7 +123,7 @@ set statusline+=\ %P                            "percent through file
 
 
 " Highlight Customizations ****************************************************
-highlight StatusLine ctermfg=3 ctermbg=9
+highlight StatusLine ctermfg=4 ctermbg=0
 highlight LineNr ctermfg=4 ctermbg=0
 
 
@@ -214,7 +216,8 @@ autocmd FileType ruby,eruby set omnifunc=rubycomplete#Complete
 " Hard to type *****************************************************************
 "imap uu _
 "imap aa @
-imap hh =>
+"imap hh =>
+imap :-) 🙂
 
 
 " -----------------------------------------------------------------------------
