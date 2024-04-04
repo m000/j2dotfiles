@@ -11,7 +11,11 @@ alias gvimt='gvim --remote-tab'
 alias nyancat='telnet nyancat.dakko.us'
 alias svnup='svn up --ignore-externals'
 alias ts='date +"%Y-%m-%d %H:%M:%S"'
+{% if path.nvim is dir -%}
+alias vi=nvim
+{% else -%}
 alias vi=vim
+{% endif %}
 {% if 'subl' is installed -%}
 {# on mac: sudo ln -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" /usr/local/bin/ #}
 alias slt="subl -a"
