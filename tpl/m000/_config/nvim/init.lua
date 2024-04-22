@@ -23,5 +23,32 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
     { import = "plugins" },
 	"airblade/vim-gitgutter",
+	"neovim/nvim-lspconfig",
 })
+
+local lspconfig = require('lspconfig')
+lspconfig.pylsp.setup{}
+
+-- lazy.nvim plugins ------------------------------------------------
+local prev_mouse_mode = ''
+vim.api.nvim_set_keymap('n', '<M-m>', ':lua ToggleMouse()<CR>', { noremap = true, silent = true })
+
+-- Function to toggle mouse mode
+function ToggleMouse()
+    -- Check if the previous mouse mode is stored
+    if prev_mouse_mode == '' then
+        -- If not stored, store the current mouse mode
+        prev_mouse_mode = vim.o.mouse
+    end
+
+    -- Toggle between disabling the mouse and the previous mouse mode
+    if vim.o.mouse == '' then
+        vim.o.mouse = prev_mouse_mode
+        print("Mouse enabled")
+    else
+        prev_mouse_mode = vim.o.mouse
+        vim.o.mouse = ''
+        print("Mouse disabled")
+    end
+end
 
