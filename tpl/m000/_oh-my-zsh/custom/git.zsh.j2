@@ -110,6 +110,11 @@ gbclean() {
     printf "Removed %d local branches and %d remote branches.\n" "$rmlocal" "$rmremote"
 }
 
+# Shows the files with unstaged changes in the repo.
+gchanged() {
+    COLUMNS=-1 git diff --stat | head -n -1 | awk '{print $1}'
+}
+
 # Inspects modified files and prompts for staging.
 # TODO: Implement using porcelain. https://www.stefanjudis.com/today-i-learned/the-short-version-of-git-status-and-the-close-but-different-porcelain-mode/
 gstagei() {
