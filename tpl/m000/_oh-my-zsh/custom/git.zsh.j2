@@ -110,9 +110,61 @@ gbclean() {
     printf "Removed %d local branches and %d remote branches.\n" "$rmlocal" "$rmremote"
 }
 
-# Shows the files with unstaged changes in the repo.
-gchanged() {
-    COLUMNS=-1 git diff --stat | head -n -1 | awk '{print $1}'
+# Lists files changed by specific commits/commit ranges.
+gchanged () {
+    # We want to use the output of the function as argument to linters etc.
+    # For this, we exclude deleted files with --diff-filter=d.
+    local gitdiff='git diff --name-only --diff-filter=d'
+
+    # No arguments provided. Only unstaged changes.
+    if [[ $# == 0 ]]; then
+        ${=gitdiff}
+        return
+    fi
+
+    for arg in "$@"; do
+        case "$arg" in
+            ([[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]]*\.\.[[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]]*)
+                # Checksum range. Use as it is. Must match before checksum.
+                ${=gitdiff} "$arg"
+                ;;
+            ([[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]]*)
+                # Standalone checksum. Show diff with its parent commit.
+                ${=gitdiff} "$arg"~1.."$arg"
+                ;;
+            ([0-9]*-[0-9]*)
+                # Head-relative range. Sort from oldest to more recent.
+                # Include the changes of the oldest commit in the output.
+                local headrange=(${(s:-:)arg})
+                headrange=($(for n in ${headrange[@]}; do echo $n; done | sort -nr))
+                headrange[1]=$((${headrange[1]} + 1))
+                ${=gitdiff} HEAD~${headrange[1]}..HEAD~${headrange[2]}
+                ;;
+            ([0-9]*-)
+                # Last n commits, head-relative. Must match befor head-relative offset.
+                # Includes the changes of the oldest commit, staged and unstaged changes.
+                ${=gitdiff} HEAD~$((${arg%%-} + 1))
+                ;;
+            ([0-9]*)
+                # Head-relative offset. Show diff with its parent commit.
+                local headrange=(${arg} ${arg})
+                headrange[1]=$((${headrange[1]} + 1))
+                ${=gitdiff} HEAD~${headrange[1]}..HEAD~${headrange[2]}
+                ;;
+            (-)
+                # Only unstaged changes.
+                ${=gitdiff}
+                ;;
+            (+)
+                # Staged and unstaged changes.
+                ${=gitdiff}
+                ${=gitdiff} --staged
+                ;;
+             (*)
+                printf "Skipping invalid arg: %s\n" "$arg" >&2
+                ;;
+        esac
+    done | sort | uniq  # deduplicate
 }
 
 # Inspects modified files and prompts for staging.
@@ -267,4 +319,4 @@ gsm() {
 }
 {% endif %}
 {% endif %}
-# vim: ft=zsh expandtab ts=5 sts=4 sw=4 :
+# vim: ft=zsh expandtab ts=4 sts=4 sw=4 :
