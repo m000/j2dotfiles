@@ -1,43 +1,75 @@
-[user]
-{% for k, v in gitconfig.user|dictsort %}
-	{{ k }} = {{ v }}
-{% endfor %}
+# Git config. Sections are alphabetically sorted for convenience.
+#
+# Sources:
+#     https://blog.gitbutler.com/how-git-core-devs-configure-git/
+#     https://news.ycombinator.com/item?id=43169435
+#     https://jvns.ca/blog/2024/02/16/popular-git-config-options/
+#     https://news.ycombinator.com/item?id=39400352
 
-[core]
-{% for k, v in gitconfig.core|dictsort %}
-	{{ k }} = {{ v }}
-{% endfor %}
-
-[github]
-{% for k, v in gitconfig.github|dictsort %}
-	{{ k }} = {{ v }}
-{% endfor %}
+[branch]
+	sort = -committerdate       # list recent branches first
 
 [color]
 {% for k, v in gitconfig.color|dictsort %}
 	{{ k }} = {{ v }}
 {% endfor %}
 
-[push]
-	default = simple
+[column]
+	ui = auto                   # list output in columns when possible
 
-[http]
-	sslVerify = false
+[core]
+{% for k, v in gitconfig.core|dictsort %}
+	{{ k }} = {{ v }}
+{% endfor %}
 
-[merge]
-	conflictStyle = zdiff3
+[diff]
+	algorithm = histogram       # produces more human-readable output
+	colorMoved = plain          # show moved blocks in different colors
 
-[rebase]
-	instructionFormat = %<(10,trunc)%aE %s
+[fetch]
+	prune = true                # auto-remove tracking of removed remote branches
 
 [filter "lfs"]
 	clean = git-lfs clean %f
 	smudge = git-lfs smudge %f
 	required = true
 
+[github]
+{% for k, v in gitconfig.github|dictsort %}
+	{{ k }} = {{ v }}
+{% endfor %}
+
+[http]
+	sslVerify = true            # verify https certificates
+
+[init]
+	defaultBranch = master
+
+[merge]
+	conflictStyle = zdiff3      # use "zealous" 3-way diff in conflict resolution
+
+[pull]
+	rebase = true               # rebase on upstream
+
+[push]
+	default = simple
+	autoSetupRemote = true      # create remote branch on first push
+
+[tag]
+	sort = version:refname      # sort tag by semver
+
+[rebase]
+	instructionFormat = %<(10,trunc)%aE %s
+
 {% for from, to in gitconfig.url_rewrites %}
 [url "{{to}}"]
 	insteadOf = {{from}}
+
+{% endfor -%}
+
+[user]
+{% for k, v in gitconfig.user|dictsort %}
+	{{ k }} = {{ v }}
 {% endfor %}
 
 ; vim:ft=dosini
