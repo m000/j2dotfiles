@@ -43,6 +43,15 @@ gfixup() {
     git commit -m $m --author=$a
 }
 
+# Does a force push from the specified HEAD offset to the remote push branch.
+gfp () {
+    local n=$(($1))
+    local remote=$(git rev-parse --abbrev-ref --symbolic-full-name @{push})
+    local upstream=${remote%%/*}
+    local branch=${remote#*/}
+    git push -v -f "${upstream}" "HEAD~${n}":"${branch}"
+}
+
 # Remove and cleanup a branch if merged with origin/master.
 gbclean() {
     local -A opts=( -r origin -b master )
