@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 
 assert sys.version_info >= (2,5), "Need at least Python 2.5."
 if sys.version_info < (3,0):
