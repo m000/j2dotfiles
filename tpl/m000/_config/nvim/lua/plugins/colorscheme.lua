@@ -1,15 +1,15 @@
 return {
-    -- add themes
-    { "craftzdog/solarized-osaka.nvim", lazy = true },
-    { "dracula/vim", lazy = true },
-    { "rose-pine/neovim", lazy = true, name = "rose-pine" },
-    { "folke/tokyonight.nvim", lazy = true, priority = 1000, opts = {} },
+  -- add themes
+  { "craftzdog/solarized-osaka.nvim", name = "solarized-osaka", lazy = true },
+  { "dracula/vim", name = "dracula", lazy = true },
+  { "rose-pine/neovim", name = "rose-pine", lazy = true },
+  { "folke/tokyonight.nvim", name = "tokyonight", lazy = true, priority = 1000, opts = {} },
 
-    -- load preferred theme
-    {
-        "LazyVim/LazyVim",
-        opts = {
-            colorscheme = "solarized-osaka-storm",
-        },
+  -- load preferred theme
+  {
+    "LazyVim/LazyVim",
+    opts = {
+      colorscheme = "solarized-osaka",
     },
+  },
 }
