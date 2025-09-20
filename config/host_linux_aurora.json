@@ -6,7 +6,7 @@
         "iterm_tmux_integration": false,
         "ohmyzsh_theme": "kphoen",
         "env": [
-            ["BUKUDB", "\"$HOME/Documents/Synced/buku-bookmarks.db\""]
+            ["BUKUDB", "\"$HOME/Documents/Syncthing/Synced/buku-bookmarks.db\""]
         ]
     },
     "path": {
