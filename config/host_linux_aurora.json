@@ -10,6 +10,7 @@
         ]
     },
     "path": {
+        "rust_rustup": "$HOME/software/rust",
         "texlive": "$HOME/software/texlive"
     }
 }

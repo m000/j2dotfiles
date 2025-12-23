@@ -13,6 +13,6 @@
         "java": "/usr/lib/jvm/default-java",
         "ocaml_opam": "$HOME/software/ocaml",
         "rust_cargo": "$HOME/software/cargo",
-        "rust_rustup": "$HOME/software/rust"
+        "rust_rustup": "$HOME/software/rustup"
     }
 }
