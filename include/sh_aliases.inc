@@ -6,6 +6,10 @@ alias CONT='killall -CONT'
 alias lnmerge="tr '\n' ' '"
 alias titlecase="sed -r 's/((^|[[:blank:]])[[:alpha:]])([[:alpha:]]*)/\U\1\L\3/g'"
 alias sigmafix="sed -r 's/σ([^[:alpha:]]|$)/ς\1'/g"
+{% if 'clip.exe' is installed -%}
+alias clip="clip.exe"
+alias pbcopy="clip.exe"
+{% endif %}
 ### program-specific shorthands
 alias gvimt='gvim --remote-tab'
 alias nyancat='telnet nyancat.dakko.us'
