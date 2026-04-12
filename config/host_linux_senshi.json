@@ -1,0 +1,18 @@
+{
+    "hostid": "senshi-linux",
+    "hostname": "senshi",
+    "shell": {
+        "ulimit": {"c": "unlimited"},
+        "iterm_tmux_integration": false,
+        "ohmyzsh_theme": "bira",
+        "env": [
+        ]
+    },
+    "path": {
+    },
+    "gitconfig": {
+        "core": {
+            "pager": "delta"
+        }
+    }
+}
