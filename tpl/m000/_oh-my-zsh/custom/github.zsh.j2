@@ -1,0 +1,139 @@
+{% if ["gh", "jq", "pandoc"] is installed %}
+# gh-predit -- locally edit a GitHub PR description
+#
+# It implements the following pipeline:
+#   (a) downloads the PR metadata via the `gh` cli tool into raw.json,
+#   (b) extracts PR number and body text using jq,
+#   (c) reformats the text with pandoc, wrapping long lines to allow for
+#       comfortable editing regardless the editor used and its settings,
+#   (d) folds back wrapped lines after editing, so that GitHub renders
+#       paragraphs correctly,
+#   (e) updates the body text of the PR via the `gh` cli tool.
+#
+# Usage:
+#   gh-predit [options] [PR]
+#     PR                 number, URL, or branch (default: current branch's PR)
+#   -n, --no-edit        skip the editor; just reformat and upload
+#   -e, --edit           force the editor step (this is the default)
+#   -f, --format FMT     pandoc format for the round-trip (default: gfm)
+#   -h, --help           show this help
+#
+# Requires zsh >= 5.8 (for `zparseopt -F`).
+
+gh-predit() {
+  emulate -L zsh          # standard zsh options, and LOCAL_OPTIONS/LOCAL_TRAPS:
+                          # every setopt/trap below is undone when we return
+  setopt nounset pipefail # error on unset vars; surface failures inside pipelines
+  zmodload zsh/zutil      # provides zparseopts
+
+  local me=${0##*/}
+
+  # ---- parse options -----------------------------------------------------
+  # `=array` collects each match (option + any argument) into that array;
+  # listing the short and long name against the same array unifies the aliases.
+  #   -D  delete parsed options from $@, leaving the positional PR ref
+  #   -F  error out on any option not described below
+  local -a o_noedit o_edit o_format o_help
+  if ! zparseopts -D -F -- \
+        n=o_noedit   -no-edit=o_noedit \
+        e=o_edit     -edit=o_edit \
+        f:=o_format  -format:=o_format \
+        h=o_help     -help=o_help ; then
+    printf "%s: try '%s --help'\n" "$me" "$me" >&2
+    return 2
+  fi
+
+  if (( $#o_help )); then
+    printf "%s -- round-trip a GitHub PR body through pandoc and your editor\nUsage: %s [-n|--no-edit] [-e|--edit] [-f FMT] [PR]\n  PR    number, URL, or branch (default: current branch's PR)\n" "$me" "$me"
+    return 0
+  fi
+
+  # ---- resolve options into plain variables ------------------------------
+  # For value options the array holds (flag value), so the value is [-1].
+  local edit=1 fmt=gfm
+  (( $#o_noedit )) && edit=0
+  (( $#o_edit   )) && edit=1
+  (( $#o_format )) && fmt=$o_format[-1]
+
+  if (( $# > 1 )); then
+    printf "%s: too many arguments: %s\n" "$me" "$*" >&2
+    return 2
+  fi
+
+  # NB: "<->" is zsh's glob for a run of digits
+  if (( $# )) && [[ $1 != <-> ]]; then
+    printf "%s: PR argument must be a number (got: %s)\n" "$me" "$1" >&2
+    return 2
+  fi
+
+  # ---- dependencies ------------------------------------------------------
+  local dep
+  for dep in gh pandoc jq; do
+    (( $+commands[$dep] )) || { printf "%s: missing dependency: %s\n" "$me" "$dep" >&2; return 1; }
+  done
+
+  # ---- workspace ---------------------------------------------------------
+  local tmp raw_json pr_num raw edited work
+  tmp=$(mktemp -d "${TMPDIR:-/tmp}/${me}.XXXXXX") || return 1
+  # An EXIT trap is the wrong tool here: LOCAL_TRAPS (from `emulate -L`) removes
+  # it on return before it can fire. zsh's always-block runs on every exit path
+  # -- normal end, `return`, or a fatal nounset error — and preserves the code.
+  {
+    raw_json=$tmp/raw.json
+
+    # ---- (a) download JSON -----------------------------------------------
+    if ! gh pr view "$@" --json number,body > "$raw_json"; then
+      printf "%s: could not read PR data (check the ref and 'gh auth status')\n" "$me" >&2
+      return 1
+    fi
+
+    # ---- (b) extract PR number & set dynamic path stems ------------------
+    pr_num=$(jq -r '.number' "$raw_json") || return 1
+    raw=$tmp/raw-${pr_num}.md       # exactly what GitHub currently has
+    edited=$tmp/edited-${pr_num}.md # wrapped for the editor (or a copy of raw if not editing)
+    work=$tmp/work-${pr_num}.md     # folded, ready to upload
+
+    jq -r '.body' "$raw_json" > "$raw" || return 1
+
+    # ---- (c) wrap for editing, then (d) edit -----------------------------
+    # ${=EDITOR} splits on spaces so values like "code --wait" work.
+    if (( edit )); then
+      # --wrap=auto hard-wraps paragraphs (~72 cols) so the buffer reads well
+      # even in an editor with no soft-wrap. Intentional hard breaks survive.
+      pandoc --from=$fmt --to=$fmt --wrap=auto "$raw" -o "$edited" || return 1
+      ${=EDITOR:-vi} "$edited" \
+        || { printf "%s: editor exited non-zero; aborting\n" "$me" >&2; return 1; }
+    else
+      cp -- "$raw" "$edited" || return 1
+    fi
+
+    # ---- (e) fold before upload ------------------------------------------
+    # --wrap=none puts each paragraph on a single line, joining the wraps we
+    # added above. GitHub keeps every newline, so this is what stops those
+    # wraps from rendering as <br>. Deliberate hard breaks are kept.
+    pandoc --from=$fmt --to=$fmt --wrap=none "$edited" -o "$work" || return 1
+
+    # ---- safety: don't silently wipe a non-empty body --------------------
+    if [[ -s $raw && ! -s $work ]]; then
+      printf "%s: result is empty; aborting without upload\n" "$me" >&2
+      return 1
+    fi
+
+    # ---- skip no-op uploads ----------------------------------------------
+    if cmp -s "$raw" "$work"; then
+      printf "%s: no changes; nothing to upload\n" "$me"
+      return 0
+    fi
+
+    # ---- (f) upload ------------------------------------------------------
+    if gh pr edit "$pr_num" --body-file "$work"; then
+      printf "%s: PR #%s body updated.\n" "$me" "$pr_num"
+    else
+      printf "%s: upload failed.\n" "$me" >&2
+      return 1
+    fi
+  } always {
+    rm -rf -- "$tmp"
+  }
+}
+{% endif %}
