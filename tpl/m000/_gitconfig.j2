@@ -22,6 +22,17 @@
 	{{ k }} = {{ v }}
 {% endfor %}
 
+{% if "gh" is installed %}
+# Use GitHub CLI exclusively for GitHub credentials.
+# The empty helper= resets any globally configured credential helpers.
+[credential "https://github.com"]
+       helper =
+       helper = !{{ "gh" | sh_which }} auth git-credential
+[credential "https://gist.github.com"]
+       helper =
+       helper = !{{ "gh" | sh_which }} auth git-credential
+{% endif %}
+
 [diff]
 	algorithm = histogram       # produces more human-readable output
 	colorMoved = plain          # show moved blocks in different colors

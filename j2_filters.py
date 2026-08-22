@@ -22,11 +22,10 @@ path_expand = lambda p: os.path.expandvars(os.path.expanduser(p)),
 path_join = lambda l: None if not all(l) else os.path.join(*l)
 
 ### Shell filters ###################################################
-#sh_quote = pipes.quote
-#sh_which = which
 #sh_expand = lambda s: os.path.expandvars(os.path.expanduser(s))
 #sh_expanduser = os.path.expanduser
 #sh_expandvars = os.path.expandvars
+#sh_quote = pipes.quote
 
 ### Debug filters ###################################################
 debug_type = lambda x: type(x)
@@ -50,5 +49,13 @@ def bool(var=None, true_=None, false_=None):
         return ('%s' % (true_ if true_ is not None else str(True).lower()))
     else:
         return ('%s' % (false_ if false_ is not None else str(False).lower()))
+
+def sh_which(b):
+    ''' Wrapper around shutil.which that raises if b is not found.
+    '''
+    bpath = which(b)
+    if bpath is None:
+        raise FileNotFoundError('Executable %r not found in the shell path.' % (b,))
+    return bpath
 
 # vim:set tabstop=4 softtabstop=4 expandtab:
