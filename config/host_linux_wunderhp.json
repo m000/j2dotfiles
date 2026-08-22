@@ -10,6 +10,7 @@
         ]
     },
     "path": {
+        "bun": "$HOME/software/bun",
         "texlive": "$HOME/software/texlive"
     },
     "gitconfig": {
